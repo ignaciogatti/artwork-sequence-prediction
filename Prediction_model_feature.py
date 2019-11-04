@@ -34,7 +34,6 @@ class Prediction_model_feature:
     def define_model(self):
         
         #To reset any variable in Tensorflow
-        tf.keras.backend.clear_session()
         tf.random.set_seed(51)
         np.random.seed(51)
     

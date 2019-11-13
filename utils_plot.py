@@ -2,11 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_series(time, series, label , format="-", start=0, end=None):
+def plot_series(time, series , format="-", start=0, end=None):
+    '''
+    series = [(serie_1, label_1), (serie_2, label_2), ...]
+    '''
     
     plt.figure(figsize=(10, 6))
-    for s in series:
-        plt.plot(time[start:end], s[start:end], format, label= label)
+    for s, l in series:
+        plt.plot(time[start:end], s[start:end], format, label= l)
     plt.xlabel("Time")
     plt.ylabel("Value")
     plt.grid(True)

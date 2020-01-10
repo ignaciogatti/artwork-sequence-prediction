@@ -15,6 +15,8 @@ def plot_series(time, series , format="-", start=0, end=None):
     plt.grid(True)
     plt.legend(loc='upper left')
     
+    return plt
+    
     
 def plot_train_history(history, title):
     loss = history.history['loss']
@@ -29,7 +31,7 @@ def plot_train_history(history, title):
     plt.title(title)
     plt.legend()
 
-    plt.show()
+    return plt
 
     
 def create_time_steps(length):

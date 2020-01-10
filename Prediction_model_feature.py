@@ -60,6 +60,7 @@ class Prediction_model_feature:
         self._dataset = Windowed_Dataset(X, split_time, window_size, shuffle_buffer, train_batch_size, val_batch_size)
         self._window_size = window_size
         self._name = name
+        self._model = None
 
     
     def define_model(self):
@@ -81,7 +82,6 @@ class Prediction_model_feature:
             tf.keras.layers.Lambda(lambda x: x * 400)
         ],
         name=self._name.replace(' ', '_'))
-
         
         return self._model
     
@@ -95,3 +95,9 @@ class Prediction_model_feature:
                                  epochs=epochs,
                                  validation_data=self._dataset.get_val_dataset())
         return history
+    
+    def get_model(self):
+        if self._model != None:
+            return self._model
+        else:
+            return self.define_model()

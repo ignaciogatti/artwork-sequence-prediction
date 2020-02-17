@@ -70,14 +70,14 @@ class Prediction_model_feature:
         np.random.seed(51)
     
         self._model = tf.keras.models.Sequential([
-            tf.keras.layers.Conv1D(filters=32, kernel_size=5,
+            tf.keras.layers.Conv1D(filters=16, kernel_size=5,
                                   strides=1, padding="causal",
                                   activation="relu",
                                   input_shape=[None, 1]),
             tf.keras.layers.LSTM(self._window_size, return_sequences=True),
             tf.keras.layers.LSTM(self._window_size, return_sequences=True),
-            tf.keras.layers.Dense(30, activation="relu"),
-            tf.keras.layers.Dense(10, activation="relu"),
+            tf.keras.layers.Dense(15, activation="relu"),
+            tf.keras.layers.Dense(5, activation="relu"),
             tf.keras.layers.Dense(1),
             tf.keras.layers.Lambda(lambda x: x * 400)
         ],

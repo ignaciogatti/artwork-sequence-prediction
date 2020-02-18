@@ -25,7 +25,7 @@ class Windowed_Dataset:
     #Define a train dataset
     def _create_train_dataset(self, batch_size, shuffle_buffer):
         ds = self._windowed_dataset(self._x_train, batch_size)
-        ds = ds.shuffle(shuffle_buffer)
+        #ds = ds.shuffle(shuffle_buffer)
         ds = ds.map(lambda w: (w[:-1], w[-1:]))
         return ds.batch(batch_size).prefetch(1)
 
@@ -75,8 +75,8 @@ class Prediction_model_feature:
                                   activation="relu",
                                   input_shape=[None, 1]),
             tf.keras.layers.LSTM(self._window_size, return_sequences=True),
-            tf.keras.layers.LSTM(self._window_size, return_sequences=True),
-            tf.keras.layers.Dense(15, activation="relu"),
+            tf.keras.layers.LSTM(self._window_size),
+            #tf.keras.layers.Dense(15, activation="relu"),
             tf.keras.layers.Dense(5, activation="relu"),
             tf.keras.layers.Dense(1),
             tf.keras.layers.Lambda(lambda x: x * 400)

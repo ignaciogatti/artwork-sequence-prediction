@@ -26,14 +26,14 @@ class Windowed_Dataset:
     def _create_train_dataset(self, batch_size, shuffle_buffer):
         ds = self._windowed_dataset(self._x_train, batch_size)
         #ds = ds.shuffle(shuffle_buffer)
-        ds = ds.map(lambda w: (w[:-1], w[-1:]))
+        ds = ds.map(lambda w: (w[:-1], w[-1,0]))
         return ds.batch(batch_size).prefetch(1)
 
     
     #Define a validation dataset
     def _create_validation_dataset(self, batch_size):
         ds = self._windowed_dataset(self._x_valid, batch_size)
-        ds = ds.map(lambda w: (w[:-1], w[-1:]))
+        ds = ds.map(lambda w: (w[:-1], w[-1,0]))
         return ds.batch(batch_size).prefetch(1)
 
     

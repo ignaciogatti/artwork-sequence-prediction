@@ -5,13 +5,13 @@ from Prediction_model_feature import Prediction_model_feature
 from IPython.display import clear_output
 import numpy as np
 import pandas as pd
-
+import os
 
 
 class Sequence_generator_rnn(Sequence_generator_class):
     
     def __init__(self, window_size, X_tour, df_X_tour, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time):
-        self.name= "Sequence_generator_rnn"
+        self._name= "Sequence_generator_rnn"
         self._X_tour = X_tour
         self._window_size = window_size
         self._df_all_metadata = df_all_metadata
@@ -36,9 +36,9 @@ class Sequence_generator_rnn(Sequence_generator_class):
     
     
     def _load_model(self):
-        self._n_features = X.shape[1]
+        self._n_features = self._X.shape[1]
         self._models = []
-        for i in range(n_features):
+        for i in range(self._n_features):
             clear_output(wait=True)
             #Create model
             model_prediction = Prediction_model_feature(
@@ -54,7 +54,7 @@ class Sequence_generator_rnn(Sequence_generator_class):
             model =self._load_weights(model, i, self._museum_sequence_path)
             self._models.append(model)
             
-            return self._models
+        return self._models
     
     
     def _model_forecast(self, model, series, window_size, batch_size):
@@ -87,7 +87,7 @@ class Sequence_generator_rnn(Sequence_generator_class):
         predicted_features = []
         for feature in range(self._n_features):
             #Predict feature i
-            x_feature = X_tour[:,feature]
+            x_feature = self._X_tour[:,feature]
             rnn_forecast = self._model_forecast(self._models[feature], x_feature, self._window_size, self._batch_size)
             rnn_forecast = rnn_forecast[1:,-1]
             
@@ -158,3 +158,6 @@ class Sequence_generator_rnn(Sequence_generator_class):
 
     def get_name(self):
         return self._name
+    
+    def get_model(self):
+        return self._models

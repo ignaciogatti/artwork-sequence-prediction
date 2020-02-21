@@ -15,7 +15,8 @@ class Windowed_Dataset:
     
     
     def _windowed_dataset(self, series, batch_size):
-        series = tf.expand_dims(series, axis=-1)
+        if len(series.shape) == 1:
+            series = tf.expand_dims(series, axis=-1)
         ds = tf.data.Dataset.from_tensor_slices(series)
         ds = ds.window(self._window_size + 1, shift=1, drop_remainder=True)
         ds = ds.flat_map(lambda w: w.batch(self._window_size + 1))
@@ -25,6 +26,7 @@ class Windowed_Dataset:
     #Define a train dataset
     def _create_train_dataset(self, batch_size, shuffle_buffer):
         ds = self._windowed_dataset(self._x_train, batch_size)
+        # Take care because it can destroy the order of the sequence
         #ds = ds.shuffle(shuffle_buffer)
         ds = ds.map(lambda w: (w[:-1], w[-1,0]))
         return ds.batch(batch_size).prefetch(1)

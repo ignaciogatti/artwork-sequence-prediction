@@ -1,6 +1,7 @@
 from Sequence_generator_based_previous_most_similar import Sequence_generator_based_previous_most_similar
 from Sequence_geneartion_rnn import Sequence_generator_rnn
 from abc import ABC, abstractmethod
+import tensorflow as tf
 
 
 class Generator_model_factory(ABC):
@@ -39,6 +40,9 @@ class Generator_model_most_similar(Generator_model_factory):
         return seq_generator_most_sim
     
     
+    def __str__(self):
+        return 'generated_sequence_based_previous_most_similar'
+    
     
 class Generator_model_rnn(Generator_model_factory):
     
@@ -60,6 +64,8 @@ class Generator_model_rnn(Generator_model_factory):
     
         
     def get_model(self):
+        #Clear all variables from previous model
+        tf.keras.backend.clear_session()
     
         seq_generator_rnn = Sequence_generator_rnn(
             X = self._X, 
@@ -74,3 +80,6 @@ class Generator_model_rnn(Generator_model_factory):
             shuffle_buffer_size = self._shuffle_buffer_size )
 
         return seq_generator_rnn
+    
+    def __str__(self):
+        return 'generated_sequence_rnn'

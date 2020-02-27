@@ -5,12 +5,10 @@ from Sequence_generator_models import Sequence_generator_class
 
 class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
     
-    def __init__(self, window_size, X_tour, df_X_tour, df_all_metadata, all_data_matrix):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix):
         self._name = "Sequence generator based previous most similar"
-        self._X_tour = X_tour
         self._window_size = window_size
         self._df_all_metadata = df_all_metadata
-        self._df_X_tour = df_X_tour
         self._all_data_matrix = all_data_matrix
         
         
@@ -43,6 +41,7 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
         df_removed = df_all_metadata.copy()
         df_removed = df_removed.drop(indexes)
         df_removed = df_removed.reset_index(drop=True)
+
 
         #Remove ftom code matrix
         code_matrix = all_data_matrix.copy()
@@ -117,6 +116,19 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
         forecast_matrix = np.stack(self._predicted_code_list)
         return forecast_matrix
     
+    
+    def set_tour(self, X_tour, df_X_tour):
+        self._X_tour = X_tour
+        self._df_X_tour = df_X_tour
+
+    
     def get_name(self):
         return self._name
+    
+    def del_data(self):
+        del self._X_tour
+        del self._window_size
+        del self._df_all_metadata
+        del self._df_X_tour
+        del self._all_data_matrix
     

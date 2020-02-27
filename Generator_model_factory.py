@@ -10,9 +10,6 @@ class Generator_model_factory(ABC):
     def get_model(self):
         pass
     
-    @abstractmethod
-    def set_tour(self, X_tour, df_X_tour):
-        pass
     
 
 class Generator_model_most_similar(Generator_model_factory):
@@ -23,18 +20,12 @@ class Generator_model_most_similar(Generator_model_factory):
         self._df_all_metadata = df_all_metadata
         
         
-    def set_tour(self, X_tour, df_X_tour):
-        self._X_tour = X_tour
-        self._df_X_tour = df_X_tour
-
         
     def get_model(self):
 
         seq_generator_most_sim = Sequence_generator_based_previous_most_similar( 
-            X_tour = self._X_tour, 
             window_size = self._window_size, 
             all_data_matrix = self._all_data_matrix, 
-            df_X_tour = self._df_X_tour, 
             df_all_metadata = self._df_all_metadata )
 
         return seq_generator_most_sim
@@ -57,10 +48,6 @@ class Generator_model_rnn(Generator_model_factory):
         self._shuffle_buffer_size = shuffle_buffer_size
         self._split_time = split_time
         
-
-    def set_tour(self, X_tour, df_X_tour):
-        self._X_tour = X_tour
-        self._df_X_tour = df_X_tour
     
         
     def get_model(self):
@@ -70,8 +57,6 @@ class Generator_model_rnn(Generator_model_factory):
         seq_generator_rnn = Sequence_generator_rnn(
             X = self._X, 
             all_data_matrix = self._all_data_matrix, 
-            X_tour = self._X_tour, 
-            df_X_tour = self._df_X_tour, 
             df_all_metadata = self._df_all_metadata, 
             batch_size = self._batch_size, 
             window_size = self._window_size, 
@@ -80,6 +65,7 @@ class Generator_model_rnn(Generator_model_factory):
             shuffle_buffer_size = self._shuffle_buffer_size )
 
         return seq_generator_rnn
+    
     
     def __str__(self):
         return 'generated_sequence_rnn'

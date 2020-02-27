@@ -10,12 +10,10 @@ import os
 
 class Sequence_generator_rnn(Sequence_generator_class):
     
-    def __init__(self, window_size, X_tour, df_X_tour, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time):
         self._name= "Sequence_generator_rnn"
-        self._X_tour = X_tour
         self._window_size = window_size
         self._df_all_metadata = df_all_metadata
-        self._df_X_tour = df_X_tour
         self._all_data_matrix = all_data_matrix
         self._museum_sequence_path = museum_sequence_path
         
@@ -159,5 +157,29 @@ class Sequence_generator_rnn(Sequence_generator_class):
     def get_name(self):
         return self._name
     
+    
     def get_model(self):
         return self._models
+    
+    
+    def set_tour(self, X_tour, df_X_tour):
+        self._X_tour = X_tour
+        self._df_X_tour = df_X_tour
+
+        
+    def del_data(self):
+        del self._X_tour
+        del self._window_size
+        del self._df_all_metadata
+        del self._df_X_tour
+        del self._all_data_matrix
+        del self._museum_sequence_path 
+        
+        del self._split_time
+        del self._X
+        del self._batch_size
+        del self._shuffle_buffer_size 
+        
+        del self._forecast_matrix
+        del self._df_predicted_tour
+        del self._predicted_code_list

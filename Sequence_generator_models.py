@@ -14,4 +14,11 @@ class Sequence_generator_class(ABC):
     @abstractmethod
     def get_name(self):
         pass
-
+    
+    @abstractmethod
+    def del_data(self):
+        pass
+    
+    @abstractmethod
+    def set_tour(self, X_tour, df_X_tour):
+        pass

@@ -76,7 +76,8 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
         #Made a copy of the data to keep the data safe
         df_all_metadata = self._df_all_metadata.copy()
         all_data_matrix = self._all_data_matrix.copy()
-
+        
+        #Check if window size is bigger than the tour length
         for i in range(self._X_tour.shape[0] - self._window_size):
 
             #Get current codes
@@ -113,6 +114,9 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
     
     
     def get_predicted_tour_matrix(self):
+        #No tour predicted because the window size was too big
+        if len(self._predicted_code_list) == 0:
+            return np.array([])
         forecast_matrix = np.stack(self._predicted_code_list)
         return forecast_matrix
     

@@ -24,15 +24,17 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
     def _get_artwork_index(self, sim_matrix):
     
         #Sort indexes
-        sort_index = np.argsort(sim_matrix.reshape((-1,)))
-        #Find most similar artwork index
-        sim_artwork_index = sort_index[-1]
+        sort_index = np.argsort(sim_matrix.reshape((-1,)))[-200:]
+
+        sort_index = np.flip(sort_index)
+        #Find most similar artwork index with random walk
+        sim_artwork_index = np.random.choice(sort_index, 2, replace=False)[0]
 
         if np.isclose(sim_matrix[:,sim_artwork_index][0], 1.):
             #Because the top is the current artwork
-            return sort_index[-2]
-        else:
             return sort_index[-1]
+        else:
+            return sim_artwork_index
     
     
     def _drop_selected_artwork(self, indexes, df_all_metadata, all_data_matrix):

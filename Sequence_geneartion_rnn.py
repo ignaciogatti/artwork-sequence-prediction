@@ -98,6 +98,7 @@ class Sequence_generator_rnn(Sequence_generator_class):
     
     def predict_tour(self):
         
+        
         #Dataframe with the tour
         self._df_predicted_tour = pd.DataFrame({ 'title' : [],
                          'author' : [],
@@ -107,7 +108,12 @@ class Sequence_generator_rnn(Sequence_generator_class):
        
         ##List with the artworks's code that belongs to the tour
         self._predicted_code_list =[]
+
         
+        #Check if window size is bigger than the tour length
+        if (self._X_tour.shape[0] - self._window_size < 1 ):
+            return self._df_predicted_tour
+                
         #Made a copy of the data to keep the data safe
         df_all_metadata = self._df_all_metadata.copy()
         all_data_matrix = self._all_data_matrix.copy()
@@ -150,6 +156,10 @@ class Sequence_generator_rnn(Sequence_generator_class):
     
     
     def get_predicted_tour_matrix(self):
+        #No tour predicted because the window size was too big
+        if len(self._predicted_code_list) == 0:
+            return np.array([])
+        
         forecast_matrix = np.stack(self._predicted_code_list)
         return forecast_matrix
    

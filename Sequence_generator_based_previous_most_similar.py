@@ -24,7 +24,7 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
     def _get_artwork_index(self, sim_matrix):
     
         #Sort indexes
-        sort_index = np.argsort(sim_matrix.reshape((-1,)))[-200:]
+        sort_index = np.argsort(sim_matrix.reshape((-1,)))[-300:]
 
         sort_index = np.flip(sort_index)
         #Find most similar artwork index with random walk

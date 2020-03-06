@@ -58,10 +58,11 @@ class Windowed_Dataset:
 class Prediction_model_feature:
     
     
-    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name):
+    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name, n_features=1):
         self._dataset = Windowed_Dataset(X, split_time, window_size, shuffle_buffer, train_batch_size, val_batch_size)
         self._window_size = window_size
         self._name = name
+        self._n_features = n_features
         self._model = None
 
     
@@ -72,13 +73,13 @@ class Prediction_model_feature:
         np.random.seed(51)
     
         self._model = tf.keras.models.Sequential([
-            tf.keras.layers.Conv1D(filters=32, kernel_size=5,
+            tf.keras.layers.Conv1D(filters=20, kernel_size=5,
                                   strides=1, padding="causal",
                                   activation="relu",
-                                  input_shape=[None, 1]),
-            tf.keras.layers.LSTM(64, return_sequences=True),
-            tf.keras.layers.LSTM(32),
-            tf.keras.layers.Dense(32, activation="relu"),
+                                  input_shape=[None, self._n_features]),
+            tf.keras.layers.LSTM(40, return_sequences=True),
+            tf.keras.layers.LSTM(20),
+            tf.keras.layers.Dense(16, activation="relu"),
             tf.keras.layers.Dense(8, activation="relu"),
             tf.keras.layers.Dense(1),
             tf.keras.layers.Lambda(lambda x: x * 400)

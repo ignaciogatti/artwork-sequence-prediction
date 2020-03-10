@@ -66,21 +66,21 @@ class Prediction_model_feature:
         self._model = None
 
     
-    def define_model(self):
+    def define_model(self, conv_filter=20, lstm_filter=40, dense_filter=16):
         
         #To reset any variable in Tensorflow
         tf.random.set_seed(51)
         np.random.seed(51)
     
         self._model = tf.keras.models.Sequential([
-            tf.keras.layers.Conv1D(filters=20, kernel_size=5,
+            tf.keras.layers.Conv1D(filters=conv_filter, kernel_size=5,
                                   strides=1, padding="causal",
                                   activation="relu",
-                                  input_shape=[None, self._n_features]),
-            tf.keras.layers.LSTM(40, return_sequences=True),
-            tf.keras.layers.LSTM(20),
-            tf.keras.layers.Dense(16, activation="relu"),
-            tf.keras.layers.Dense(8, activation="relu"),
+                                  input_shape=[self._window_size, self._n_features]),
+            tf.keras.layers.LSTM(lstm_filter, return_sequences=True),
+            tf.keras.layers.LSTM(lstm_filter//2),
+            tf.keras.layers.Dense(dense_filter, activation="relu"),
+            tf.keras.layers.Dense(dense_filter//2, activation="relu"),
             tf.keras.layers.Dense(1),
             tf.keras.layers.Lambda(lambda x: x * 400)
         ],

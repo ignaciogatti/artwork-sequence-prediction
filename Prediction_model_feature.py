@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import os
 
 
 class Windowed_Dataset:
@@ -58,11 +59,16 @@ class Windowed_Dataset:
 class Prediction_model_feature:
     
     
-    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name, n_features=1):
-        self._dataset = Windowed_Dataset(X, split_time, window_size, shuffle_buffer, train_batch_size, val_batch_size)
+    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name, index, n_features=1):
+        self._X = X
+        self._split_time = split_time
         self._window_size = window_size
+        self._train_batch_size = train_batch_size
+        self._val_batch_size = val_batch_size
+        self._shuffle_buffer = shuffle_buffer
         self._name = name
         self._n_features = n_features
+        self._index = index
         self._model = None
 
     
@@ -89,7 +95,16 @@ class Prediction_model_feature:
         return self._model
     
     
+    def _define_x_features(self):
+        self._x_features = self._X[:, self._index]
+        return self._x_features
+    
+    
     def train_model(self, lr, epochs):
+        #Define features involved in the dataset
+        self._x_features = self._define_x_features()
+        self._dataset = Windowed_Dataset(self._x_features, self._split_time, self._window_size, self._shuffle_buffer, self._train_batch_size, self._val_batch_size)
+        #Train model
         optimizer = tf.keras.optimizers.SGD(lr=lr, momentum=0.9)
         self._model.compile(loss=tf.keras.losses.Huber(),
                       optimizer=optimizer,
@@ -99,8 +114,26 @@ class Prediction_model_feature:
                                  validation_data=self._dataset.get_val_dataset())
         return history
     
+    
     def get_model(self):
         if self._model != None:
             return self._model
         else:
             return self.define_model()
+        
+    
+    def save_weights(self, museum_sequence_path):
+        #Create the folder where the weights are saved
+        model_feature_folder = os.path.join(museum_sequence_path['weights_folder'], 'model_feature_'+str(self._index))
+        if not os.path.exists(model_feature_folder):
+            os.makedirs(model_feature_folder)
+        #Save weights
+        self._model.save_weights(os.path.join(model_feature_folder, 'weights_feature_'+str(self._index)))
+        
+        
+    def load_weights(self, museum_sequence_path):
+        #Find the folder where the weights are saved
+        model_feature_folder = os.path.join(museum_sequence_path['weights_folder'], 'model_feature_'+str(self._index))    
+        #Load weights
+        self._model.load_weights(os.path.join(model_feature_folder, 'weights_feature_'+str(self._index)))
+        return self._model

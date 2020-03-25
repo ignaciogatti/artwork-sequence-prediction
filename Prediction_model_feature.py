@@ -137,3 +137,7 @@ class Prediction_model_feature:
         #Load weights
         self._model.load_weights(os.path.join(model_feature_folder, 'weights_feature_'+str(self._index)))
         return self._model
+    
+    
+    def get_indexes_features(self):
+        return []

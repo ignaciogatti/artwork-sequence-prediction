@@ -17,9 +17,9 @@ class Prediction_model_feature_multivariate(Prediction_model_feature):
         self._x_features = self._X[:, self._index]
         #Define influence features
         self._indexes_features = np.random.choice(np.delete(np.arange(self._X.shape[1]), self._index), self._n_influence_features, replace=False)
-        x_inflence_features = self._X[:, list(self._indexes_features)]
+        x_influence_features = self._X[:, list(self._indexes_features)]
         #Stack feature to predict with influences features
-        self._x_features = np.hstack(tup=(self._x_features.reshape((-1,1)), x_inflence_features))
+        self._x_features = np.hstack(tup=(self._x_features.reshape((-1,1)), x_influence_features))
         return self._x_features
     
     
@@ -39,3 +39,7 @@ class Prediction_model_feature_multivariate(Prediction_model_feature):
         with open (x_influence_feature_folder, 'rb') as fp:
             self._indexes_features = pickle.load(fp)
         return self._model
+    
+    
+    def get_indexes_features(self):
+        return self._indexes_features

@@ -6,9 +6,10 @@ from IPython.display import clear_output
 import numpy as np
 import pandas as pd
 import os
+from abc import abstractmethod
 
 
-class Sequence_generator_rnn(Sequence_generator_class):
+class Abstract_sequence_generator_rnn(Sequence_generator_class):
     
     def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time):
         self._name= "Sequence_generator_rnn"
@@ -22,15 +23,10 @@ class Sequence_generator_rnn(Sequence_generator_class):
         self._batch_size = batch_size
         self._shuffle_buffer_size = shuffle_buffer_size
         
-        self.models = self._load_model()
-        
-        
-    def _load_weights(self, model, index, museum_sequence_path):
-        #Find the folder where the weights are saved
-        model_feature_folder = os.path.join(museum_sequence_path['weights_folder'], 'model_feature_'+str(index))    
-        #Load weights
-        model.load_weights(os.path.join(model_feature_folder, 'weights_feature_'+str(index)))
-        return model
+
+    @abstractmethod    
+    def _create_rnn_model(self, i):
+        pass
     
     
     def _load_model(self):
@@ -39,24 +35,20 @@ class Sequence_generator_rnn(Sequence_generator_class):
         for i in range(self._n_features):
             clear_output(wait=True)
             #Create model
-            model_prediction = Prediction_model_feature(
-                X=self._X[:, 0],
-                split_time=self._split_time,
-                train_batch_size=self._batch_size, 
-                val_batch_size=self._batch_size, 
-                window_size=self._window_size, 
-                shuffle_buffer=self._shuffle_buffer_size,
-                name="feature " + str(0))
-            model = model_prediction.get_model()
+            model_prediction = self._create_rnn_model(i)
+            
+            model_prediction.define_model(conv_filter=16, lstm_filter=32, dense_filter=16)
             #Load weights
-            model =self._load_weights(model, i, self._museum_sequence_path)
-            self._models.append(model)
+            model_prediction.load_weights(self._museum_sequence_path)
+            
+            self._models.append(model_prediction)
             
         return self._models
     
     
     def _model_forecast(self, model, series, window_size, batch_size):
-        series = tf.expand_dims(series, axis=-1)
+        if len(series.shape) == 1:
+            series = tf.expand_dims(series, axis=-1)
         ds = tf.data.Dataset.from_tensor_slices(series)
         ds = ds.window(self._window_size, shift=1, drop_remainder=True)
         ds = ds.flat_map(lambda w: w.batch(self._window_size))
@@ -86,7 +78,7 @@ class Sequence_generator_rnn(Sequence_generator_class):
         for feature in range(self._n_features):
             #Predict feature i
             x_feature = self._X_tour[:,feature]
-            rnn_forecast = self._model_forecast(self._models[feature], x_feature, self._window_size, self._batch_size)
+            rnn_forecast = self._model_forecast(self._models[feature].get_model(), x_feature, self._window_size, self._batch_size)
             rnn_forecast = rnn_forecast[1:,-1]
             
             predicted_features.append(rnn_forecast)

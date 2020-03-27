@@ -16,6 +16,7 @@ class Prediction_model_feature_multivariate(Prediction_model_feature):
     def _define_x_features(self):
         self._x_features = self._X[:, self._index]
         #Define influence features
+        np.random.seed(self._index)
         self._indexes_features = np.random.choice(np.delete(np.arange(self._X.shape[1]), self._index), self._n_influence_features, replace=False)
         x_influence_features = self._X[:, list(self._indexes_features)]
         #Stack feature to predict with influences features

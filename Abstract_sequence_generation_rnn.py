@@ -11,7 +11,7 @@ from abc import abstractmethod
 
 class Abstract_sequence_generator_rnn(Sequence_generator_class):
     
-    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter=16, lstm_filter=32, dense_filter=16):
         self._name= "Sequence_generator_rnn"
         self._window_size = window_size
         self._df_all_metadata = df_all_metadata
@@ -22,6 +22,9 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
         self._X = X
         self._batch_size = batch_size
         self._shuffle_buffer_size = shuffle_buffer_size
+        self._conv_filter = conv_filter
+        self._lstm_filter = lstm_filter
+        self._dense_filter = dense_filter
         
 
     @abstractmethod    
@@ -37,7 +40,7 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
             #Create model
             model_prediction = self._create_rnn_model(i)
             
-            model_prediction.define_model(conv_filter=16, lstm_filter=32, dense_filter=16)
+            model_prediction.define_model(conv_filter=self._conv_filter, lstm_filter=self._lstm_filter, dense_filter=self._dense_filter)
             #Load weights
             model_prediction.load_weights(self._museum_sequence_path)
             

@@ -10,7 +10,7 @@ import os
 
 class Sequence_generator_rnn(Abstract_sequence_generator_rnn):
     
-    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter=20, lstm_filter=40, dense_filter=16):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter=16, lstm_filter=32, dense_filter=16):
         super().__init__(window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter, lstm_filter, dense_filter)
         self.models = self._load_model()
     

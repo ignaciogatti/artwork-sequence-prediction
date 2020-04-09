@@ -10,7 +10,7 @@ import os
 
 class Sequence_generator_rnn_multivariate(Abstract_sequence_generator_rnn):
     
-    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, n_influence_features, conv_filter=32, lstm_filter=64, dense_filter=16):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, n_influence_features, conv_filter=40, lstm_filter=70, dense_filter=20):
         
         super().__init__(window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter, lstm_filter, dense_filter)
         self._n_influence_features = n_influence_features

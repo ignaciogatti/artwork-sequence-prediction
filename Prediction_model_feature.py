@@ -72,7 +72,7 @@ class Prediction_model_feature:
         self._model = None
 
     
-    def define_model(self, conv_filter=20, lstm_filter=40, dense_filter=16):
+    def define_model(self, conv_filter=20, lstm_filter=40, dense_filter=16, prediction_length=1):
         
         #To reset any variable in Tensorflow
         tf.random.set_seed(51)
@@ -87,7 +87,7 @@ class Prediction_model_feature:
             tf.keras.layers.LSTM(lstm_filter//2),
             tf.keras.layers.Dense(dense_filter, activation="relu"),
             tf.keras.layers.Dense(dense_filter//2, activation="relu"),
-            tf.keras.layers.Dense(1),
+            tf.keras.layers.Dense(prediction_length),
             tf.keras.layers.Lambda(lambda x: x * 400)
         ],
         name=self._name.replace(' ', '_'))

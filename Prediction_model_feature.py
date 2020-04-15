@@ -6,21 +6,23 @@ import os
 class Windowed_Dataset:
 
     #TODO: split X
-    def __init__(self, X, split_time, window_size, shuffle_buffer, train_batch_size, val_batch_size):
+    def __init__(self, X, split_time, window_size, shuffle_buffer, train_batch_size, val_batch_size, prediction_length=1):
         self._split_time = split_time
         self._x_train = X[:self._split_time]
         self._x_valid = X[self._split_time:]
         self._window_size = window_size
+        self._prediction_length = prediction_length
         self._train_dataset = self._create_train_dataset(train_batch_size, shuffle_buffer)
         self._val_dataset = self._create_validation_dataset(val_batch_size)
+
     
     
     def _windowed_dataset(self, series, batch_size):
         if len(series.shape) == 1:
             series = tf.expand_dims(series, axis=-1)
         ds = tf.data.Dataset.from_tensor_slices(series)
-        ds = ds.window(self._window_size + 1, shift=1, drop_remainder=True)
-        ds = ds.flat_map(lambda w: w.batch(self._window_size + 1))
+        ds = ds.window(self._window_size + self._prediction_length, shift=1, drop_remainder=True)
+        ds = ds.flat_map(lambda w: w.batch(self._window_size + self._prediction_length))
         return ds
 
 
@@ -29,14 +31,16 @@ class Windowed_Dataset:
         ds = self._windowed_dataset(self._x_train, batch_size)
         # Take care because it can destroy the order of the sequence
         #ds = ds.shuffle(shuffle_buffer)
-        ds = ds.map(lambda w: (w[:-1], w[-1,0]))
+        y_true_slice = self._prediction_length * (-1)
+        ds = ds.map(lambda w: (w[:y_true_slice], w[y_true_slice:,0]))
         return ds.batch(batch_size).prefetch(1)
 
     
     #Define a validation dataset
     def _create_validation_dataset(self, batch_size):
         ds = self._windowed_dataset(self._x_valid, batch_size)
-        ds = ds.map(lambda w: (w[:-1], w[-1,0]))
+        y_true_slice = self._prediction_length * (-1)
+        ds = ds.map(lambda w: (w[:y_true_slice], w[y_true_slice:,0]))
         return ds.batch(batch_size).prefetch(1)
 
     
@@ -69,6 +73,7 @@ class Prediction_model_feature:
         self._name = name
         self._n_features = n_features
         self._index = index
+        self._prediction_length = 1
         self._model = None
 
     
@@ -77,6 +82,7 @@ class Prediction_model_feature:
         #To reset any variable in Tensorflow
         tf.random.set_seed(51)
         np.random.seed(51)
+        self._prediction_length = prediction_length
     
         self._model = tf.keras.models.Sequential([
             tf.keras.layers.Conv1D(filters=conv_filter, kernel_size=5,
@@ -103,7 +109,7 @@ class Prediction_model_feature:
     def train_model(self, lr, epochs):
         #Define features involved in the dataset
         self._x_features = self._define_x_features()
-        self._dataset = Windowed_Dataset(self._x_features, self._split_time, self._window_size, self._shuffle_buffer, self._train_batch_size, self._val_batch_size)
+        self._dataset = Windowed_Dataset(self._x_features, self._split_time, self._window_size, self._shuffle_buffer, self._train_batch_size, self._val_batch_size, self._prediction_length)
         #Train model
         optimizer = tf.keras.optimizers.SGD(lr=lr, momentum=0.9)
         self._model.compile(loss=tf.keras.losses.Huber(),

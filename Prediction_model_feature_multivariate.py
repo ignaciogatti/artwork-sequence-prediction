@@ -6,9 +6,9 @@ import pickle
 
 class Prediction_model_feature_multivariate(Prediction_model_feature):
     
-    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name, index, n_influence_features, n_features=1):
+    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, n_influence_features, n_features=1):
         
-        super().__init__(X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name, index)
+        super().__init__(X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer)
         self._n_features += n_influence_features
         self._n_influence_features = n_influence_features
         

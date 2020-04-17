@@ -15,14 +15,12 @@ class Sequence_generator_rnn(Abstract_sequence_generator_rnn):
         self.models = self._load_model()
     
     
-    def _create_rnn_model(self, i):
+    def _create_rnn_model(self):
         return Prediction_model_feature(
                 X=self._X[:, 0],
                 split_time=self._split_time,
                 train_batch_size=self._batch_size, 
                 val_batch_size=self._batch_size, 
                 window_size=self._window_size, 
-                shuffle_buffer=self._shuffle_buffer_size,
-                index = i,
-                name="feature " + str(0))
+                shuffle_buffer=self._shuffle_buffer_size)
         

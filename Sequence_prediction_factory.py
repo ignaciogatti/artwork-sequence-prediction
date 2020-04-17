@@ -38,8 +38,6 @@ class Sequence_prediction_univariate(Sequence_prediction_factory):
             val_batch_size=self._val_batch_size, 
             window_size=self._window_size, 
             shuffle_buffer=self._shuffle_buffer_size,
-            name="feature " + str(self._index),
-            index = self._index,
             n_features=1)
     
     
@@ -64,7 +62,5 @@ class Sequence_prediction_multivariate(Sequence_prediction_factory):
             val_batch_size=self._self._val_batch_size, 
             window_size=self._window_size, 
             shuffle_buffer=self._shuffle_buffer_size,
-            name="feature " + str(self._index),
-            index =self._index,
             n_influence_features=self._n_influence_features,
             n_features=1)

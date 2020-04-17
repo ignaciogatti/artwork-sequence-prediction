@@ -28,25 +28,23 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
         
 
     @abstractmethod    
-    def _create_rnn_model(self, i):
+    def _create_rnn_model(self):
         pass
+    
     
     
     def _load_model(self):
         self._n_features = self._X.shape[1]
-        self._models = []
-        for i in range(self._n_features):
-            clear_output(wait=True)
-            #Create model
-            model_prediction = self._create_rnn_model(i)
-            
-            model_prediction.define_model(conv_filter=self._conv_filter, lstm_filter=self._lstm_filter, dense_filter=self._dense_filter)
-            #Load weights
-            model_prediction.load_weights(self._museum_sequence_path)
-            
-            self._models.append(model_prediction)
-            
-        return self._models
+        #Create model
+        self._model = self._create_rnn_model()
+        self._model.define_model(
+            conv_filter=self._conv_filter, 
+            lstm_filter=self._lstm_filter, 
+            dense_filter=self._dense_filter, 
+            prediction_length=self._prediction_length
+            )
+        return self._model
+
     
     
     def _model_forecast(self, model, series, window_size, batch_size):
@@ -79,10 +77,19 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
         
         predicted_features = []
         for feature in range(self._n_features):
+            #Load weights for feature i
+            self._model.set_index(feature)
+            self._model.load_weights(self._museum_sequence_path)
+
+            #Define feature to take into account for prediction
+            x_influence_features = self._model.get_indexes_features()
+            x_influence_features = np.insert(arr=x_influence_features, obj=0, values=int(feature))
+            x_feature = X[:,x_influence_features.astype(int)]
+    
             #Predict feature i
-            x_feature = self._X_tour[:,feature]
-            rnn_forecast = self._model_forecast(self._models[feature].get_model(), x_feature, self._window_size, self._batch_size)
-            rnn_forecast = rnn_forecast[1:,-1]
+            rnn_forecast = model_forecast(self._model.get_model(), x_feature, self._window_size, self._batch_size)
+            rnn_forecast = rnn_forecast.reshape((-1))
+            #rnn_forecast = rnn_forecast[1:,-1]
             
             predicted_features.append(rnn_forecast)
         

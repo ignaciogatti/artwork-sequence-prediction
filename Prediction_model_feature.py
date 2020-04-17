@@ -63,16 +63,15 @@ class Windowed_Dataset:
 class Prediction_model_feature:
     
     
-    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, name, index, n_features=1):
+    def __init__(self, X, split_time, window_size, train_batch_size, val_batch_size, shuffle_buffer, n_features=1):
         self._X = X
         self._split_time = split_time
         self._window_size = window_size
         self._train_batch_size = train_batch_size
         self._val_batch_size = val_batch_size
         self._shuffle_buffer = shuffle_buffer
-        self._name = name
         self._n_features = n_features
-        self._index = index
+        self._index = 0
         self._prediction_length = 1
         self._model = None
 
@@ -95,8 +94,9 @@ class Prediction_model_feature:
             tf.keras.layers.Dense(dense_filter//2, activation="relu"),
             tf.keras.layers.Dense(prediction_length),
             tf.keras.layers.Lambda(lambda x: x * 400)
-        ],
-        name=self._name.replace(' ', '_'))
+        ])
+        # It used to have a name
+#        name=self._name.replace(' ', '_'))
         
         return self._model
     
@@ -119,6 +119,11 @@ class Prediction_model_feature:
                                  epochs=epochs,
                                  validation_data=self._dataset.get_val_dataset())
         return history
+    
+    
+    
+    def set_index(self, index):
+        self._index = index
     
     
     def get_model(self):
@@ -146,4 +151,4 @@ class Prediction_model_feature:
     
     
     def get_indexes_features(self):
-        return []
+        return np.array([])

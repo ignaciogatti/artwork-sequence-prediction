@@ -11,7 +11,7 @@ from abc import abstractmethod
 
 class Abstract_sequence_generator_rnn(Sequence_generator_class):
     
-    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter=16, lstm_filter=32, dense_filter=16):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter=16, lstm_filter=32, dense_filter=16, prediction_length=1):
         self._name= "Sequence_generator_rnn"
         self._window_size = window_size
         self._df_all_metadata = df_all_metadata
@@ -25,6 +25,7 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
         self._conv_filter = conv_filter
         self._lstm_filter = lstm_filter
         self._dense_filter = dense_filter
+        self._prediction_length = prediction_length
         
 
     @abstractmethod    
@@ -72,7 +73,12 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
 
         return df_removed, code_matrix
     
+    
+    @abstractmethod
+    def _define_x_features(self, feature):
+        pass
 
+    
     def _predict_features(self):
         
         predicted_features = []
@@ -82,14 +88,12 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
             self._model.load_weights(self._museum_sequence_path)
 
             #Define feature to take into account for prediction
-            x_influence_features = self._model.get_indexes_features()
-            x_influence_features = np.insert(arr=x_influence_features, obj=0, values=int(feature))
-            x_feature = X[:,x_influence_features.astype(int)]
+            x_feature = self._define_x_features(feature)
     
             #Predict feature i
-            rnn_forecast = model_forecast(self._model.get_model(), x_feature, self._window_size, self._batch_size)
-            rnn_forecast = rnn_forecast.reshape((-1))
-            #rnn_forecast = rnn_forecast[1:,-1]
+            rnn_forecast = self._model_forecast(self._model.get_model(), x_feature, self._window_size, self._batch_size)
+            #rnn_forecast = rnn_forecast.reshape((-1))
+            rnn_forecast = rnn_forecast[1:,-1]
             
             predicted_features.append(rnn_forecast)
         
@@ -174,9 +178,10 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
         return self._models
     
     
-    def set_tour(self, X_tour, df_X_tour):
+    def set_tour(self, X_tour, df_X_tour, X_embedding_tour):
         self._X_tour = X_tour
         self._df_X_tour = df_X_tour
+        self._X_embedding_tour = X_embedding_tour
 
         
     def del_data(self):

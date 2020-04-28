@@ -1,6 +1,7 @@
 from Sequence_generator_based_previous_most_similar import Sequence_generator_based_previous_most_similar
 from Sequence_generation_rnn import Sequence_generator_rnn
 from Sequence_generation_rnn_multivariate import Sequence_generator_rnn_multivariate
+from Sequence_generation_rnn_embedding import Sequence_generator_rnn_embedding
 from abc import ABC, abstractmethod
 import tensorflow as tf
 
@@ -108,3 +109,41 @@ class Generator_model_rnn_multivariate(Generator_model_factory):
     
     def __str__(self):
         return 'generated_sequence_rnn_multivariate'
+    
+    
+class Generator_model_rnn_embedding(Generator_model_factory):
+    
+    def __init__(self, X, window_size, all_data_matrix, df_all_metadata, museum_sequence_path, batch_size, shuffle_buffer_size, split_time, X_embedding):
+        
+        self._X = X
+        self._window_size = window_size
+        self._all_data_matrix = all_data_matrix
+        self._df_all_metadata = df_all_metadata
+        self._museum_sequence_path = museum_sequence_path
+        self._batch_size = batch_size
+        self._shuffle_buffer_size = shuffle_buffer_size
+        self._split_time = split_time
+        self._X_embedding = X_embedding
+        
+    
+        
+    def get_model(self):
+        #Clear all variables from previous model
+        tf.keras.backend.clear_session()
+    
+        seq_generator_rnn_embedding = Sequence_generator_rnn_embedding(
+            X = self._X, 
+            all_data_matrix = self._all_data_matrix, 
+            df_all_metadata = self._df_all_metadata, 
+            batch_size = self._batch_size, 
+            window_size = self._window_size, 
+            split_time = self._split_time, 
+            museum_sequence_path = self._museum_sequence_path, 
+            shuffle_buffer_size = self._shuffle_buffer_size,
+            X_embeddings = self._X_embedding)
+
+        return seq_generator_rnn_embedding
+    
+    
+    def __str__(self):
+        return 'generated_sequence_rnn_embedding'

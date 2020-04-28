@@ -123,9 +123,10 @@ class Sequence_generator_based_previous_most_similar(Sequence_generator_class):
         return forecast_matrix
     
     
-    def set_tour(self, X_tour, df_X_tour):
+    def set_tour(self, X_tour, df_X_tour, X_embedding_tour):
         self._X_tour = X_tour
         self._df_X_tour = df_X_tour
+        self._X_embedding_tour = X_embedding_tour
 
     
     def get_name(self):

@@ -10,9 +10,9 @@ import os
 
 class Sequence_generator_rnn_multivariate(Abstract_sequence_generator_rnn):
     
-    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, n_influence_features, conv_filter=40, lstm_filter=64, dense_filter=20):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, n_influence_features, conv_filter=40, lstm_filter=64, dense_filter=20, prediction_length=1):
         
-        super().__init__(window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter, lstm_filter, dense_filter)
+        super().__init__(window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter, lstm_filter, dense_filter, prediction_length)
         self._n_influence_features = n_influence_features
         self.models = self._load_model()
 
@@ -28,4 +28,7 @@ class Sequence_generator_rnn_multivariate(Abstract_sequence_generator_rnn):
             n_features=1)
             
     
-        
+    def _define_x_features(self, feature):
+        x_influence_features = self._model.get_indexes_features()
+        x_influence_features = np.insert(arr=x_influence_features, obj=0, values=int(feature))
+        return self._X_tour[:,x_influence_features.astype(int)]

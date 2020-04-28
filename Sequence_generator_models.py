@@ -20,5 +20,5 @@ class Sequence_generator_class(ABC):
         pass
     
     @abstractmethod
-    def set_tour(self, X_tour, df_X_tour):
+    def set_tour(self, X_tour, df_X_tour, X_embedding_tour):
         pass

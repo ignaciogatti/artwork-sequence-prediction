@@ -10,7 +10,7 @@ import os
 
 class Sequence_generator_rnn_embedding(Abstract_sequence_generator_rnn):
     
-    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, X_embeddings, conv_filter=16, lstm_filter=32, dense_filter=20, prediction_length=1):
+    def __init__(self, window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, X_embeddings, conv_filter=20, lstm_filter=40, dense_filter=20, prediction_length=1):
         super().__init__(window_size, df_all_metadata, all_data_matrix, museum_sequence_path, batch_size, shuffle_buffer_size, X, split_time, conv_filter, lstm_filter, dense_filter, prediction_length)
         self._X_embeddings = X_embeddings
         self.models = self._load_model()

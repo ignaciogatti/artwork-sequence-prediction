@@ -13,6 +13,11 @@ class Generator_model_factory(ABC):
     @abstractmethod
     def get_model(self):
         pass
+    
+    
+    @abstractmethod
+    def get_tour_data(self, index, tour_length):
+        pass
 
 '''
 ####################  Generator Most similar model ##############################
@@ -21,7 +26,8 @@ class Generator_model_factory(ABC):
 
 class Generator_model_most_similar(Generator_model_factory):
     
-    def __init__(self, window_size, all_data_matrix, df_all_metadata):
+    def __init__(self, X, window_size, all_data_matrix, df_all_metadata):
+        self._X = X
         self._window_size = window_size
         self._all_data_matrix = all_data_matrix
         self._df_all_metadata = df_all_metadata
@@ -36,7 +42,11 @@ class Generator_model_most_similar(Generator_model_factory):
 
         return seq_generator_most_sim
     
+
+    def get_tour_data(self, index, tour_length):
+        return self._X[index: index + tour_length]
     
+
     def __str__(self):
         return 'generated_sequence_based_previous_most_similar'
     
@@ -69,12 +79,16 @@ class Abstract_Generator_model_rnn(Generator_model_factory):
         return trained_weights_path
 
     
+    def get_tour_data(self, index, tour_length):
+        return self._X[index: index + tour_length]
+
+    
     
 class Generator_model_rnn(Abstract_Generator_model_rnn):
     
-    def __init__(self, X, window_size, all_data_matrix, df_all_metadata, CONFIG_PATH, batch_size, shuffle_buffer_size, split_time, conv_filter=20, lstm_filter=40, dense_filter=16, prediction_length=1):
+    def __init__(self, X, window_size, all_data_matrix, df_all_metadata, CONFIG_PATH, batch_size, shuffle_buffer_size, split_time, conv_filter=20, lstm_filter=40, dense_filter=16, prediction_length=1, name='generated_sequence_rnn'):
         super().__init__(X, window_size, all_data_matrix, df_all_metadata, CONFIG_PATH, batch_size, shuffle_buffer_size, split_time, conv_filter, lstm_filter, dense_filter, prediction_length)
-            
+        self._name = name
         
     def get_model(self):
         #Clear all variables from previous model
@@ -98,7 +112,7 @@ class Generator_model_rnn(Abstract_Generator_model_rnn):
     
     
     def __str__(self):
-        return 'generated_sequence_rnn'
+        return self._name
     
 
 class Generator_model_rnn_multivariate(Abstract_Generator_model_rnn):

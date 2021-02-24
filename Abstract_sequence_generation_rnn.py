@@ -36,6 +36,7 @@ class Abstract_sequence_generator_rnn(Sequence_generator_class):
     
     def _load_model(self):
         self._n_features = self._X.shape[1]
+        print(self._n_features)
         #Create model
         self._model = self._create_rnn_model()
         self._model.define_model(

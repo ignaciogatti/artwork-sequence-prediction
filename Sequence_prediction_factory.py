@@ -29,8 +29,16 @@ class Sequence_prediction_factory(ABC):
     
     
     def get_trained_weights_path(self):
+        config_folder = os.path.join(self._CONFIG_PATH, 'config_'+ str(self._window_size))
+        if not os.path.exists(config_folder):
+            os.makedirs(config_folder)
+        
+        trained_weights_folder = os.path.join(config_folder, 'trained_model_weights')
+        if not os.path.exists(trained_weights_folder):
+            os.makedirs(trained_weights_folder)
+            
         trained_weights_path = {
-            'weights_folder' : os.path.join(self._CONFIG_PATH, 'config_'+str(self._window_size)+'/trained_model_weights')
+            'weights_folder' : trained_weights_folder
         }
         return trained_weights_path
 
@@ -39,10 +47,18 @@ class Sequence_prediction_factory(ABC):
         '''
             It is useful because we load the model once and then we train with different configurations
         '''
-        museum_sequence_path = {
-            'weights_folder' : os.path.join(self._CONFIG_PATH, 'config_'+str(self._window_size)+'/untrained_model_weights')
+        config_folder = os.path.join(self._CONFIG_PATH, 'config_'+ str(self._window_size))
+        if not os.path.exists(config_folder):
+            os.makedirs(config_folder)
+        
+        untrained_weights_folder = os.path.join(config_folder, 'untrained_model_weights')
+        if not os.path.exists(untrained_weights_folder):
+            os.makedirs(untrained_weights_folder)
+            
+        untrained_weights_path = {
+            'weights_folder' : untrained_weights_folder
         }
-        return museum_sequence_path
+        return untrained_weights_path
     
     
 

@@ -4,6 +4,7 @@
 **/image_sequence
 **/plots
 **/predicted_tours
+**/kfold
 
 # python bitecodes #
 
